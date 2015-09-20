@@ -2,7 +2,7 @@ var UserModel = Backbone.Model.extend({
 	defaults: {
 		username:''
 	}
-})
+});
 
 var IssueModel = Backbone.Model.extend({
 	defaults: {
@@ -11,14 +11,16 @@ var IssueModel = Backbone.Model.extend({
 		creator:'',
 		assignee:'',
 		status:'unassigned',
+	},
+	assignTask: function() {
+
 	}
-	// Add methods if needed...
-})
+});
 
 var UserCollection = Backbone.Collection.extend({
 	model:UserModel
-})
+});
 
 var IssueCollection = Backbone.Collection.extend({
 	model:IssueModel
-})
+});
