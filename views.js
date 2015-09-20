@@ -4,12 +4,16 @@ var TaskView = Backbone.View.extend({
 	render: function() {
 		var title = createElement('h2');
 		title.html = this.model.get('title');
+
 		var description = createElement('p');
 		description.html = this.model.get('description');
+
 		var creator = createElement('h4');
 		creator.html = this.model.get('creator');
+
 		var status = createElement('h6');
 		status.html = this.model.get('status');
+
 		var selectStatus = <select><option>Unassigned</option></select><select><option>Assigned</select></option><select><option>In Progress</select></option><select><option>Done</select></options>;
 		for (users in userCollection) { //not exact, needs improvement...how to connect to users
 		var option = select.append(createElement('option'));
@@ -29,6 +33,7 @@ var TaskView = Backbone.View.extend({
 		deleteTask: function() {
 
 		}
+	}
 });
 
 var CreateTaskView = Backbone.View.extend({
