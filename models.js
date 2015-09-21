@@ -2,6 +2,8 @@ var UserModel = Backbone.Model.extend({
 	defaults: {
 		username:''
 	}
+	//find tasks for user
+	//export relavent tasks
 });
 
 var IssueModel = Backbone.Model.extend({

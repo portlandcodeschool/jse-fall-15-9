@@ -37,7 +37,43 @@ var TaskView = Backbone.View.extend({
 });
 
 var CreateTaskView = Backbone.View.extend({
-
+//[x]input field
+//[x]create button
+//[x]cancel button
+//[ ]pushes new tasks to IssueCollection
+    render: function() {
+      var header = '<h2>Unassigned Tasks</h2>'
+      var title = 'Title: <input type="text" id="title-input">';
+      var description = 'Description: <input type="text" id="description-input">';
+      var submit = '<button id="add-task">Add Task</button>';
+      var cancel = '<button id="cancel">Cancel</button>';
+      this.$el.html(header + title + description + submit);
+    },
+    initialize : function () {
+      this.listenTo(this.collection, 'add', this.addTask);
+    },
+    events : {
+      'click #add-task': 'addModel'
+      'click #cancel': return
+    },
+    addModel : function () {
+      if ($('#title-input').val() !== '' && $('#description-input').val() !== '') {
+        this.collection.add({});
+      } else {
+        return console.log('Fields cannot be blank');
+      }
+    },
+	addTask : function (newModel) {
+	      var taskTitle = $('#title-input').val();
+	      var taskDescription = $('#description-input').val();
+	      newModel.set('title', taskTitle);
+	      newModel.set('description', taskDescription);
+	      var view = new TaskView({ model: newModel });
+	      view.render();
+	      $('#title-input').val('');
+	      $('#description-input').val('');
+	      this.$el.append(view.$el);
+    }
 });
 
 var UnassignedTasksView = Backbone.View.extend({
