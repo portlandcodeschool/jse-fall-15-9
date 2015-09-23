@@ -1,4 +1,12 @@
 GUI = (function(){ //IIFE for all Views
+//Initialize a variable to store active user. Updated in LoginView.grantAccess()
+var activeUser;
+//	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//
+//!! CAUTION: activeUser stores the MODEL of the active user. //
+//So if you need to access the active user's username, use 		//
+// activeUser.get("username")	!!															//
+//	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//
+
 
 var TaskView = Backbone.View.extend({
 	render: function () {
@@ -53,8 +61,13 @@ var CreateTaskView = Backbone.View.extend({
 	 save: function() {
 	 	 var titleStr = this.$el.find("#title").val();
 		 var descrStr = this.$el.find("#description").val();
-		 //need to add something get correct creator
+		 //Added if statement to specify correct creator if there's an active user
+		 if(activeUser) {
+			 this.collection.add({title: titleStr, description: descrStr,
+			 creator: activeUser.get("username")});
+		 } else {
 		 this.collection.add({title: titleStr, description: descrStr});
+	 	}
 },
 
 });
@@ -85,23 +98,39 @@ var UnassignedTasksView = Backbone.View.extend({
 });
 
 var UserTasksView = Backbone.View.extend({
+	//Need to figure out why the first user to log in gets all tasks
+	//added by someone else in their UserTasksView. Must have something to
+	// do with this.render or this.belongsToUser ...
 	render: function() {
 		this.$el.html("<p>Tasks for user " + this.model.get("username") +
 		":</p>");
 		//Get all the tasks associated with a user
-		var userCreatedTasks = this.collection.where({creator: this.model.get("username")});
-		var userAssignedTasks = this.collection.where({assignee: this.model.get("username")});
+		var userCreatedTasks = this.collection.where({creator: activeUser.get("username")});
+		var userAssignedTasks = this.collection.where({assignee: activeUser.get("username")});
 		//And append them (currently appends [Object object] -- FIX THIS)
-
-		//userCreatedTasks.plucl(attribute); collection.pluck()
+ 		//Try to fix problem with collection.pluck()
 		this.$el.append("<p>"+userCreatedTasks+"</p>"+"<p>"+
 		 userAssignedTasks+"</p>");
-		console.log(userCreatedTasks, userAssignedTasks);
 
-		//NEED TO LISTEN FOR ADDS, TO UPDATE IN REAL TIME!!
+	},
+	belongsToUser: function(task) {
+		console.log(task.get("creator"), task.get("assignee"));
+		if(task.get("creator") === activeUser.get("username") ||
+		task.get("assignee") === activeUser.get("username") ) {
+			this.appendNew(task);
+		}
+	},
+	// THIS NEEDS WORK. Right now I'm cheating and displaying some data from
+	// the array of tasks I got above in this.render
+	//Eventually I need to make this display the proper TaskViews!
+	appendNew: function(newTask) {
+		this.$el.append("<p>Title: "+newTask.get("title")+"</p>" +
+	"<p>Creator:" + newTask.get("creator")+"</p>");
 	},
 	initialize: function() {
-		this.listenTo(this.collection, "add", )
+		//Whenever a new model is added to the collection, check if it
+		//was created by or assigned to the active user.
+		this.listenTo(this.collection, "add", this.belongsToUser);
 	}
 });
 
@@ -157,6 +186,8 @@ var LoginView = Backbone.View.extend({
 		this.$el.html('');
 	},
 	grantAccess : function(user) {
+		//First set the active user to be the user that just logged in
+		activeUser = user;
 		//Create a new UserView and UserTasksView to replace the LoginView
 		var userView = new UserView({model: user});
 		this.clear();
@@ -186,7 +217,7 @@ loginView.render();
 $("#login").append(loginView.$el);
 
 	//this starts process - creates CreateTasksView with a TaskCollection (which has TaskModel in it)
-	createTaskView = new CreateTaskView({collection: app.tasks});
+	createTaskView = new CreateTaskView({collection: app.tasks, model: activeUser});
 	//immediately runs the render function in CreateasksView (which just shows the 'Create New Task' button)
 	createTaskView.render();
 
