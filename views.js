@@ -32,7 +32,7 @@ var CreateTaskView = Backbone.View.extend({
 		var saveBtn = '<button id = "saveBtn"> Save Task </button>';
 		 //make text input fields which show default attributes upon load
 	  var titleInput = '<input id= "title" type="text" value="" />';
-		var descrInput = '<input id= "description" type="text" value="" />';
+		var descrInput = '<textarea id="description"></textarea>';
 		//append text input titles, text input fields, and save button into a div into task-list
 		this.$el.html("Task Title" + "<div>" + titleInput + "</div>" +
 		 							"Description" + "<br><div>" + descrInput + "</div>" +
@@ -101,7 +101,7 @@ var UserTasksView = Backbone.View.extend({
 		//NEED TO LISTEN FOR ADDS, TO UPDATE IN REAL TIME!!
 	},
 	initialize: function() {
-		this.listenTo(this.collection, "add", )
+		this.listenTo(this.collection, "add")
 	}
 });
 
@@ -126,8 +126,8 @@ var UserView = Backbone.View.extend({
 var LoginView = Backbone.View.extend({
 	render: function() {
 		var loginBtn = "<button id='loginBtn'>Log In</button>";
-		this.$el.html("<h2>Log In</h2>" + "<input id='userInput'>Username</input>" +
-		"<input id='passInput'>Password</input>" + loginBtn);
+		this.$el.html("<h2>Log In</h2>" + "Username <input id='userInput'></input>" +
+		"Password <input type='password' id='passInput'></input>" + loginBtn);
 	},
 	events: {
 		"click #loginBtn": "authenticate"
@@ -142,6 +142,7 @@ var LoginView = Backbone.View.extend({
 		//Check to see if there's a user with given username
 		//If not, tell us. If so, see if the passwords match
 		//Then load a UserView!
+		// Could we add a "try again" or "return" button when it redirects us to "username does not match any registered users"
 		if(!this.collection.findWhere({username: userInput})) {
 			this.$el.html("<p class='hideSoon'>Username " + userInput +
 			//In the future I want to hide these 'hidesoon's after a while
