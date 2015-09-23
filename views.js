@@ -105,27 +105,33 @@ var UnassignedTasksView = Backbone.View.extend({
 });
 
 var UserTasksView = Backbone.View.extend({
-
+	render: function() {
+		this.$el.html("<p>Tasks for user " + this.model.get("username") +
+		":</p>");
+		var userTasks = this.collection
+	}
 });
 
 var UserView = Backbone.View.extend({
-	//username : this.model.get("username"),
 	render: function() {
 		this.$el.html("<p>Welcome, "+this.model.get('username')+"</p>"+
 		"<button id='logOut'>Log Out</button>");
 	},
+	events: {
+		"click #logOut": "logOut"
+	},
 	logOut: function() {
 		this.model = undefined;
-	}/*,
-	initialize : function() {
-
-	} */
+		this.$el.html('');
+		loginView = new LoginView({collection: app.users});
+		loginView.render();
+		$("#login").append(loginView.$el);
+	}
 
 });
 
 var LoginView = Backbone.View.extend({
 	render: function() {
-		//var username = this.model.get("username");
 		var loginBtn = "<button id='loginBtn'>Log In</button>";
 		this.$el.html("<h2>Log In</h2>" + "<input id='userInput'>Username</input>" +
 		"<input id='passInput'>Password</input>" + loginBtn);
@@ -162,6 +168,10 @@ var LoginView = Backbone.View.extend({
 		this.clear();
 		userView.render();
 		$("#app").append(userView.$el);
+
+		var userTasksView = new UserTasksView({model: user, collection: app.tasks});
+		userTasksView.render();
+		$("#app").append(userTasksView.$el);
 	}
 });
 
@@ -174,7 +184,8 @@ function GUI(users, tasks, el) {
 	// el is selector for where GUI connects in DOM
 	this.el = el;
 
-//Starting on the login page. Login will reveal to UserView
+//Start the user on the LoginView. Authenticate their info, then
+//send them on to the
 loginView = new LoginView({collection: app.users});
 loginView.render();
 $("#login").append(loginView.$el);
