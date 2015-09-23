@@ -108,7 +108,20 @@ var UserTasksView = Backbone.View.extend({
 	render: function() {
 		this.$el.html("<p>Tasks for user " + this.model.get("username") +
 		":</p>");
-		var userTasks = this.collection
+		//Get all the tasks associated with a user
+		var userCreatedTasks = this.collection.where({creator: this.model.get("username")});
+		var userAssignedTasks = this.collection.where({assignee: this.model.get("username")});
+		//And append them (currently appends [Object object] -- FIX THIS)
+
+		//userCreatedTasks.plucl(attribute); collection.pluck()
+		this.$el.append("<p>"+userCreatedTasks+"</p>"+"<p>"+
+		 userAssignedTasks+"</p>");
+		console.log(userCreatedTasks, userAssignedTasks);
+
+		//NEED TO LISTEN FOR ADDS, TO UPDATE IN REAL TIME!!
+	},
+	initialize: function() {
+		this.listenTo(this.collection, "add", )
 	}
 });
 
@@ -164,6 +177,7 @@ var LoginView = Backbone.View.extend({
 		this.$el.html('');
 	},
 	grantAccess : function(user) {
+		//Create a new UserView and UserTasksView to replace the LoginView
 		var userView = new UserView({model: user});
 		this.clear();
 		userView.render();
