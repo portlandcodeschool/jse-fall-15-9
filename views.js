@@ -109,11 +109,60 @@ var UserTasksView = Backbone.View.extend({
 });
 
 var UserView = Backbone.View.extend({
+	//username : this.model.get("username"),
+	render: function() {
+		this.$el.html("<p>Welcome, "+this.model.get('username')+"</p>"+
+		"<button id='logOut'>Log Out</button>");
+	},
+	logOut: function() {
+		this.model = undefined;
+	}/*,
+	initialize : function() {
+
+	} */
 
 });
 
 var LoginView = Backbone.View.extend({
+	render: function() {
+		//var username = this.model.get("username");
+		var loginBtn = "<button id='loginBtn'>Log In</button>";
+		this.$el.html("<h2>Log In</h2>" + "<input id='userInput'>Username</input>" +
+		"<input id='passInput'>Password</input>" + loginBtn);
+	},
+	events: {
+		"click #loginBtn": "authenticate"
+	},
+	initialize: function() {
+		this.$el.on("")
+	},
+	authenticate: function() {
+		var userInput = $("#userInput").val(); //Grab the user input
+		var passInput = $("#passInput").val();
 
+		//Check to see if there's a user with given username
+		//If not, tell us. If so, see if the passwords match
+		//Then load a UserView!
+		if(!this.collection.findWhere({username: userInput})) {
+			this.$el.html("<p class='hideSoon'>Username " + userInput +
+			//In the future I want to hide these 'hidesoon's after a while
+			" does not match any registered users.</p>");
+		} else {
+			var user = this.collection.findWhere({username: userInput});
+		}
+		if (user.get("password") === passInput) {
+			this.grantAccess(user);		//This will load the UserView.
+		} else this.$el.html("<p class='hideSoon'>Incorrect password.</p>");
+	},
+	clear: function() {
+		this.$el.html('');
+	},
+	grantAccess : function(user) {
+		var userView = new UserView({model: user});
+		this.clear();
+		userView.render();
+		$("#app").append(userView.$el);
+	}
 });
 
 // generic ctor to represent interface:
@@ -124,6 +173,12 @@ function GUI(users, tasks, el) {
 	this.tasks = tasks;
 	// el is selector for where GUI connects in DOM
 	this.el = el;
+
+//Starting on the login page. Login will reveal to UserView
+loginView = new LoginView({collection: app.users});
+loginView.render();
+$("#login").append(loginView.$el);
+
 
 	//this starts process - creates UnassignedTasksView with a TaskCollection (which has TaskModel in it)
 	unassignedTasksView = new UnassignedTasksView({collection: this.tasks});
