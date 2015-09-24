@@ -14,4 +14,5 @@ $(function() { //when DOM is ready...
 	app.gui = new GUI(app.users,
 						app.tasks,
 						'#app');// selector of main div
-}
+	
+});
