@@ -101,53 +101,89 @@ var UserTasksView = Backbone.View.extend({
 	//Need to figure out why the first user to log in gets all tasks
 	//added by someone else in their UserTasksView. Must have something to
 	// do with this.render or this.belongsToUser ...
-	render: function() {
+	render: function(caller) {
+		console.log('Render called by '+caller);
 		this.$el.html("<p>Tasks for user " + this.model.get("username") +
 		":</p>");
 		//Get all the tasks associated with a user
 		var userCreatedTasks = this.collection.where({creator: activeUser.get("username")});
 		var userAssignedTasks = this.collection.where({assignee: activeUser.get("username")});
-		//And append them (currently appends [Object object] -- FIX THIS)
- 		//Try to fix problem with collection.pluck()
-		this.$el.append("<p>"+userCreatedTasks+"</p>"+"<p>"+
-		 userAssignedTasks+"</p>");
-
+		//If user has any tasks, append them. Otherwise, tell us we don't have any
+		if (userCreatedTasks.length !== 0) {
+			userCreatedTasks.forEach(this.appendNew, this);
+		} else this.$el.append("<p>You currently have no tasks.</p>");
 	},
-	belongsToUser: function(task) {
+	/*belongsToUser: function(task) {
 		console.log(task.get("creator"), task.get("assignee"));
 		if(task.get("creator") === activeUser.get("username") ||
 		task.get("assignee") === activeUser.get("username") ) {
-			this.appendNew(task);
+			console.log(task.get("creator") === activeUser.get("username"));
+			this.userTasksCollection.add(task);
 		}
-	},
+	}, */
+
 	// THIS NEEDS WORK. Right now I'm cheating and displaying some data from
 	// the array of tasks I got above in this.render
 	//Eventually I need to make this display the proper TaskViews!
+
 	appendNew: function(newTask) {
 		this.$el.append("<p>Title: "+newTask.get("title")+"</p>" +
 	"<p>Creator:" + newTask.get("creator")+"</p>");
 	},
+	reRender: function() {
+		console.log('Re-rendering...')
+		this.$el.html('');
+		this.render('reRender');
+	},
 	initialize: function() {
 		//Whenever a new model is added to the collection, check if it
 		//was created by or assigned to the active user.
-		this.listenTo(this.collection, "add", this.belongsToUser);
+		this.listenTo(this.collection, "add", this.reRender);
 	}
 });
 
 var UserView = Backbone.View.extend({
+	hasView: false,
+
 	render: function() {
 		this.$el.html("<p>Welcome, "+this.model.get('username')+"</p>"+
 		"<button id='logOut'>Log Out</button>");
+		if (this.collection.length !== 0 && this.hasView === false)	this.addView();
+
+	},
+	initialize: function() {
+		//Start up the UserTasksView as soon as the UserView is up.
+			this.listenTo(app.tasks, "add", this.belongsToUser);
+	},
+	belongsToUser: function(task) {
+		if(task.get("creator") === activeUser.get("username") ||
+		task.get("assignee") === activeUser.get("username") ) {
+			this.collection.add(task);
+			this.addView();
+		}
+	},
+	addView: function() {
+		if(this.hasView == false) {
+			console.log('addView has been called');
+			console.log('Adding a new UserTasksView!');
+			var userTasksView = new UserTasksView({model: activeUser, collection: app.tasks,
+			userTasksCollection: this.collection});
+			userTasksView.render('UserView.addView');
+			this.$el.append(userTasksView.$el);
+			this.hasView = true;
+		} else console.log('addView has been called','Aborting, view already exists');
 	},
 	events: {
 		"click #logOut": "logOut"
 	},
 	logOut: function() {
-		this.model = undefined;
-		this.$el.html('');
+		//this.model = undefined;
+		//this.$el.html('');
+	//	userTasksView.html('');
 		loginView = new LoginView({collection: app.users});
 		loginView.render();
 		$("#login").append(loginView.$el);
+		this.remove();
 	}
 
 });
@@ -160,9 +196,6 @@ var LoginView = Backbone.View.extend({
 	},
 	events: {
 		"click #loginBtn": "authenticate"
-	},
-	initialize: function() {
-		this.$el.on("")
 	},
 	authenticate: function() {
 		var userInput = $("#userInput").val(); //Grab the user input
@@ -182,21 +215,15 @@ var LoginView = Backbone.View.extend({
 			this.grantAccess(user);		//This will load the UserView.
 		} else this.$el.html("<p class='hideSoon'>Incorrect password.</p>");
 	},
-	clear: function() {
-		this.$el.html('');
-	},
 	grantAccess : function(user) {
 		//First set the active user to be the user that just logged in
 		activeUser = user;
 		//Create a new UserView and UserTasksView to replace the LoginView
-		var userView = new UserView({model: user});
-		this.clear();
+		var userTasksCollection = new UserTasksCollection({user: activeUser});
+		var userView = new UserView({model: user, collection: userTasksCollection});
 		userView.render();
 		$("#app").append(userView.$el);
-
-		var userTasksView = new UserTasksView({model: user, collection: app.tasks});
-		userTasksView.render();
-		$("#app").append(userTasksView.$el);
+		this.remove();
 	}
 });
 
