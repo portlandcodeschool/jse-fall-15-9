@@ -54,6 +54,7 @@ var CreateTaskView = Backbone.View.extend({
 		//when click Save button, run save function.
 			"click #saveBtn" : "save"
 	},
+
 	//creates a new CreateTaskView with the model that is created from addModel and renders CreateTaskView's render function
 
 	//This function should find the input in the text inputs (see comment in function for example) and then set the model's attributes to the inputted values.
@@ -102,7 +103,6 @@ var UserTasksView = Backbone.View.extend({
 	//added by someone else in their UserTasksView. Must have something to
 	// do with this.render or this.belongsToUser ...
 	render: function(caller) {
-		console.log('Render called by '+caller);
 		this.$el.html("<p>Tasks for user " + this.model.get("username") +
 		":</p>");
 		//Get all the tasks associated with a user
@@ -131,7 +131,6 @@ var UserTasksView = Backbone.View.extend({
 	"<p>Creator:" + newTask.get("creator")+"</p>");
 	},
 	reRender: function() {
-		console.log('Re-rendering...')
 		this.$el.html('');
 		this.render('reRender');
 	},
@@ -144,6 +143,11 @@ var UserTasksView = Backbone.View.extend({
 	this.listenTo(this.collection, "add", this.belongsToUser);
 
 	this.listenTo(this.collection, "add", this.reRender);
+
+		//Whenever a new model is added to the collection, check if it
+		//was created by or assigned to the active user.
+		this.listenTo(this.collection, "add", this.reRender);
+
 	}
 });
 
@@ -169,14 +173,12 @@ var UserView = Backbone.View.extend({
 	},
 	addView: function() {
 		if(this.hasView == false) {
-			console.log('addView has been called');
-			console.log('Adding a new UserTasksView!');
 			var userTasksView = new UserTasksView({model: activeUser, collection: app.tasks,
 			userTasksCollection: this.collection});
 			userTasksView.render('UserView.addView');
 			this.$el.append(userTasksView.$el);
 			this.hasView = true;
-		} else console.log('addView has been called','Aborting, view already exists');
+		}
 	},
 	events: {
 		"click #logOut": "logOut"
@@ -200,7 +202,13 @@ var LoginView = Backbone.View.extend({
 		"Password <input type='password' id='passInput'></input>" + loginBtn);
 	},
 	events: {
-		"click #loginBtn": "authenticate"
+		"click #loginBtn": "authenticate",
+		"keypress input" : "loginOnEnter"
+	},
+	loginOnEnter: function (e){
+			if(e.keyCode == 13) {
+					this.authenticate();
+			}
 	},
 	authenticate: function() {
 		var userInput = $("#userInput").val(); //Grab the user input
