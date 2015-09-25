@@ -7,7 +7,7 @@ var TaskView = Backbone.View.extend({
 	  var taskCreator = this.model.get("creator");
 	  var taskAssignee = this.model.get("assignee");
 	  var taskStatus = this.model.get("status");
-    this.$el.html( "<div><h4>" + taskTitle + "</h4>" + "Description: " + taskDescription +
+    this.$el.html( "<div><h3> Unassigned Tasks </h3></div> <div><h4>" + taskTitle + "</h4>" + "Description: " + taskDescription +
 									 "<br> Added By: " + taskCreator + "<br>Status: " + taskStatus + "</div>" );
 	},
 	initialize: function () {   //must be called initialize!
@@ -32,7 +32,7 @@ var CreateTaskView = Backbone.View.extend({
 		var saveBtn = '<button id = "saveBtn"> Save Task </button>';
 		 //make text input fields which show default attributes upon load
 	  var titleInput = '<input id= "title" type="text" value="" />';
-		var descrInput = '<textarea id="description"></textarea>';
+		var descrInput = '<textarea id= "description"></textarea>';
 		//append text input titles, text input fields, and save button into a div into task-list
 		this.$el.html("Task Title" + "<div>" + titleInput + "</div>" +
 		 							"Description" + "<br><div>" + descrInput + "</div>" +
@@ -56,6 +56,8 @@ var CreateTaskView = Backbone.View.extend({
 		 var descrStr = this.$el.find("#description").val();
 		 //need to add something get correct creator
 		 this.collection.add({title: titleStr, description: descrStr});
+		 $("#title").val('');
+		 $("#description").val('');
 },
 
 });
@@ -87,8 +89,8 @@ var UnassignedTasksView = Backbone.View.extend({
 
 var UserTasksView = Backbone.View.extend({
 	render: function() {
-		this.$el.html("<p>Tasks for user " + this.model.get("username") +
-		":</p>");
+		this.$el.html("<h3> Tasks for user " + this.model.get("username") +
+		":</h3>");
 		//Get all the tasks associated with a user
 		var userCreatedTasks = this.collection.where({creator: this.model.get("username")});
 		var userAssignedTasks = this.collection.where({assignee: this.model.get("username")});
@@ -97,7 +99,7 @@ var UserTasksView = Backbone.View.extend({
 		//userCreatedTasks.plucl(attribute); collection.pluck()
 		this.$el.append("<p>"+userCreatedTasks+"</p>"+"<p>"+
 		 userAssignedTasks+"</p>");
-		console.log(userCreatedTasks, userAssignedTasks);
+		//console.log(userCreatedTasks, userAssignedTasks);
 
 		//NEED TO LISTEN FOR ADDS, TO UPDATE IN REAL TIME!!
 	},
@@ -117,6 +119,9 @@ var UserView = Backbone.View.extend({
 	logOut: function() {
 		this.model = undefined;
 		this.$el.html('');
+		$('#createTasks').html('');
+		$('#unassignedTasks').html('');
+		$('#userTasks').html('');
 		loginView = new LoginView({collection: app.users});
 		loginView.render();
 		$("#login").append(loginView.$el);
@@ -135,7 +140,7 @@ var LoginView = Backbone.View.extend({
 		"keypress input" : "loginOnEnter"
 	},
 	initialize: function() {
-		this.$el.on("")
+		//this.$el.on("")
 	},
 	loginOnEnter: function (e){
 			if(e.keyCode == 13) {
@@ -161,19 +166,26 @@ var LoginView = Backbone.View.extend({
 			this.grantAccess(user);		//This will load the UserView.
 		} else this.$el.html("<p class='hideSoon'>Incorrect password.</p>");
 	},
+
+
 	clear: function() {
 		this.$el.html('');
 	},
+
 	grantAccess : function(user) {
 		//Create a new UserView and UserTasksView to replace the LoginView
 		var userView = new UserView({model: user});
 		this.clear();
 		userView.render();
-		$("#app").append(userView.$el);
+		$("#welcome").append(userView.$el);
+
+		var createTaskView = new CreateTaskView({collection: app.tasks});
+		createTaskView.render();
+		$("#createTasks").append(createTaskView.$el);
 
 		var userTasksView = new UserTasksView({model: user, collection: app.tasks});
 		userTasksView.render();
-		$("#app").append(userTasksView.$el);
+		$("#userTasks").append(userTasksView.$el);
 	}
 });
 
@@ -187,22 +199,17 @@ function GUI(users, tasks, el) {
 	this.el = el;
 
 
-//Start the user on the LoginView. Authenticate their info, then
-//send them on to the
-loginView = new LoginView({collection: app.users});
-loginView.render();
-$("#login").append(loginView.$el);
+	//Start the user on the LoginView. Authenticate their info, then
+	//send them on to the
+	loginView = new LoginView({collection: app.users});
+	loginView.render();
+	$("#login").append(loginView.$el);
 
 	//this starts process - creates CreateTasksView with a TaskCollection (which has TaskModel in it)
-	createTaskView = new CreateTaskView({collection: app.tasks});
-	//immediately runs the render function in CreateasksView (which just shows the 'Create New Task' button)
-	createTaskView.render();
 
-	//appends render stuff into our app div
-	$(el).append(createTaskView.$el);
 	unassignedTasksView = new UnassignedTasksView({collection: app.tasks});
 	unassignedTasksView.render();
-	$(el).append(unassignedTasksView.$el);
+	$('#unassignedTasks').append(unassignedTasksView.$el);
 }
 return GUI;
 
