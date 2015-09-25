@@ -2,13 +2,16 @@ GUI = (function(){ //IIFE for all Views
 
 var TaskView = Backbone.View.extend({
 	render: function () {
+		//So I can see the users now...but not sure how to pick the one currently logged in....
+		console.log(this.collection.pluck("username"));
 		var taskTitle = this.model.get("title");
 	  var taskDescription = this.model.get("description");
 	  var taskCreator = this.model.get("creator");
 	  var taskAssignee = this.model.get("assignee");
 	  var taskStatus = this.model.get("status");
-    this.$el.html( "<div><h3> Unassigned Tasks </h3></div> <div><h4>" + taskTitle + "</h4>" + "Description: " + taskDescription +
+    this.$el.html( "</div> <div><h4>" + taskTitle + "</h4>" + "Description: " + taskDescription +
 									 "<br> Added By: " + taskCreator + "<br>Status: " + taskStatus + "</div>" );
+
 	},
 	initialize: function () {   //must be called initialize!
 		this.listenTo(this.collection, 'add', this.render());
@@ -52,10 +55,11 @@ var CreateTaskView = Backbone.View.extend({
 	//This function should find the input in the text inputs (see comment in function for example) and then set the model's attributes to the inputted values.
 	//Then we should like create a new TaskView that just shows our task...no input fields.
 	 save: function() {
-	 	 var titleStr = this.$el.find("#title").val();
-		 var descrStr = this.$el.find("#description").val();
+	 	 var titleStr = $("#title").val();
+		 var descrStr = $("#description").val();
 		 //need to add something get correct creator
 		 this.collection.add({title: titleStr, description: descrStr});
+		 //clear text box
 		 $("#title").val('');
 		 $("#description").val('');
 },
@@ -75,8 +79,7 @@ var UnassignedTasksView = Backbone.View.extend({
   investigateNewModel: function(newModel){
 		var currentStatus = newModel.get("status");
 		if (currentStatus === "Unassigned") {
-			var view = new TaskView({model: newModel});
-			view.render();
+			var view = new TaskView({model: newModel, collection: app.users});
 			this.$el.append(view.$el);
 		}
 	},
@@ -89,12 +92,16 @@ var UnassignedTasksView = Backbone.View.extend({
 
 var UserTasksView = Backbone.View.extend({
 	render: function() {
-		this.$el.html("<h3> Tasks for user " + this.model.get("username") +
-		":</h3>");
+		this.$el.html("<h3> Tasks for " + this.model.get("username") +
+		"</h3>");
 		//Get all the tasks associated with a user
 		var userCreatedTasks = this.collection.where({creator: this.model.get("username")});
 		var userAssignedTasks = this.collection.where({assignee: this.model.get("username")});
-		//And append them (currently appends [Object object] -- FIX THIS)
+		//And append them (currently appends [Object object] -- FIX THIS)-- It's not working because we have yet to
+		//assign a creator or assignee with the username of the person logged in (which I've been trying to figure out
+	  //for a good three hours and haven't yet).  It's returning empty objects because it can't find anyone
+		//since the values for creator and assignee are still blank by default. We don't have to worry about the
+		//assignee part of this yet since we don't have a function to assign to anyone yet.
 
 		//userCreatedTasks.plucl(attribute); collection.pluck()
 		this.$el.append("<p>"+userCreatedTasks+"</p>"+"<p>"+
