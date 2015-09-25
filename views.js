@@ -46,6 +46,7 @@ var CreateTaskView = Backbone.View.extend({
 		//when click Save button, run save function.
 			"click #saveBtn" : "save"
 	},
+
 	//creates a new CreateTaskView with the model that is created from addModel and renders CreateTaskView's render function
 
 	//This function should find the input in the text inputs (see comment in function for example) and then set the model's attributes to the inputted values.
@@ -130,10 +131,16 @@ var LoginView = Backbone.View.extend({
 		"Password <input type='password' id='passInput'></input>" + loginBtn);
 	},
 	events: {
-		"click #loginBtn": "authenticate"
+		"click #loginBtn": "authenticate",
+		"keypress input" : "loginOnEnter"
 	},
 	initialize: function() {
 		this.$el.on("")
+	},
+	loginOnEnter: function (e){
+			if(e.keyCode == 13) {
+					this.authenticate();
+			}
 	},
 	authenticate: function() {
 		var userInput = $("#userInput").val(); //Grab the user input
