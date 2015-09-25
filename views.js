@@ -141,10 +141,9 @@ var UserTasksView = Backbone.View.extend({
 
 		//Whenever a new model is added to the collection, check if it
 		//was created by or assigned to the active user.
+	this.listenTo(this.collection, "add", this.belongsToUser);
 
-		this.listenTo(this.collection, "add", this.belongsToUser);
-
-		this.listenTo(this.collection, "add", this.reRender);
+	this.listenTo(this.collection, "add", this.reRender);
 	}
 });
 
