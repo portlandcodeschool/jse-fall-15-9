@@ -103,7 +103,6 @@ var UserTasksView = Backbone.View.extend({
 	//added by someone else in their UserTasksView. Must have something to
 	// do with this.render or this.belongsToUser ...
 	render: function(caller) {
-		console.log('Render called by '+caller);
 		this.$el.html("<p>Tasks for user " + this.model.get("username") +
 		":</p>");
 		//Get all the tasks associated with a user
@@ -132,7 +131,6 @@ var UserTasksView = Backbone.View.extend({
 	"<p>Creator:" + newTask.get("creator")+"</p>");
 	},
 	reRender: function() {
-		console.log('Re-rendering...')
 		this.$el.html('');
 		this.render('reRender');
 	},
@@ -165,14 +163,12 @@ var UserView = Backbone.View.extend({
 	},
 	addView: function() {
 		if(this.hasView == false) {
-			console.log('addView has been called');
-			console.log('Adding a new UserTasksView!');
 			var userTasksView = new UserTasksView({model: activeUser, collection: app.tasks,
 			userTasksCollection: this.collection});
 			userTasksView.render('UserView.addView');
 			this.$el.append(userTasksView.$el);
 			this.hasView = true;
-		} else console.log('addView has been called','Aborting, view already exists');
+		}
 	},
 	events: {
 		"click #logOut": "logOut"
