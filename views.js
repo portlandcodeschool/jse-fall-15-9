@@ -15,8 +15,12 @@ var TaskView = Backbone.View.extend({
 	  var taskCreator = this.model.get("creator");
 	  var taskAssignee = this.model.get("assignee");
 	  var taskStatus = this.model.get("status");
-    this.$el.html( "<div><h4>" + taskTitle + "</h4>" + "Description: " + taskDescription +
+    this.$el.html( "</div> <div><h4>" + taskTitle + "</h4>" + "Description: " + taskDescription +
 									 "<br> Added By: " + taskCreator + "<br>Status: " + taskStatus + "</div>" );
+		if(taskStatus === "Unassigned") {
+			this.$el.append("<br><input id='newAssignee' type='text'></input> <button id='assignBtn'>Assign to User</button>");
+		}
+
 	},
 	initialize: function () {   //must be called initialize!
 		this.listenTo(this.collection, 'add', this.render());
@@ -25,11 +29,17 @@ var TaskView = Backbone.View.extend({
 			// 'this' means the view, not the model
 	},
  	events: {
- 			"click #clearBtn" : "clear"
+ 			"click #clearBtn" : "clear",
+			"click #assignBtn" : "assign"
  	},
  	clear: function () {
  			this.model.replace("");
- 	}
+ 	},
+	assign: function() {
+		var newAssignee = $("#newAssignee").val();
+		this.model.set("assignee", newAssignee);
+		this.model.set("status", "Assigned");
+	}
  });
 var CreateTaskView = Backbone.View.extend({
 	render: function () {
@@ -40,7 +50,7 @@ var CreateTaskView = Backbone.View.extend({
 		var saveBtn = '<button id = "saveBtn"> Save Task </button>';
 		 //make text input fields which show default attributes upon load
 	  var titleInput = '<input id= "title" type="text" value="" />';
-		var descrInput = '<textarea id="description"></textarea>';
+		var descrInput = '<textarea id= "description"></textarea>';
 		//append text input titles, text input fields, and save button into a div into task-list
 		this.$el.html("Task Title" + "<div>" + titleInput + "</div>" +
 		 							"Description" + "<br><div>" + descrInput + "</div>" +
@@ -60,8 +70,8 @@ var CreateTaskView = Backbone.View.extend({
 	//This function should find the input in the text inputs (see comment in function for example) and then set the model's attributes to the inputted values.
 	//Then we should like create a new TaskView that just shows our task...no input fields.
 	 save: function() {
-	 	 var titleStr = this.$el.find("#title").val();
-		 var descrStr = this.$el.find("#description").val();
+		 var titleStr = $("#title").val();
+		 var descrStr = $("#description").val();
 		 //Added if statement to specify correct creator if there's an active user
 		 if(activeUser) {
 			 this.collection.add({title: titleStr, description: descrStr,
@@ -69,6 +79,9 @@ var CreateTaskView = Backbone.View.extend({
 		 } else {
 		 this.collection.add({title: titleStr, description: descrStr});
 	 	}
+		//clear text box
+		$("#title").val('');
+		$("#description").val('');
 },
 
 });
@@ -86,8 +99,7 @@ var UnassignedTasksView = Backbone.View.extend({
   investigateNewModel: function(newModel){
 		var currentStatus = newModel.get("status");
 		if (currentStatus === "Unassigned") {
-			var view = new TaskView({model: newModel});
-			view.render();
+			var view = new TaskView({model: newModel, collection: app.users});
 			this.$el.append(view.$el);
 		}
 	},
@@ -99,11 +111,8 @@ var UnassignedTasksView = Backbone.View.extend({
 });
 
 var UserTasksView = Backbone.View.extend({
-	//Need to figure out why the first user to log in gets all tasks
-	//added by someone else in their UserTasksView. Must have something to
-	// do with this.render or this.belongsToUser ...
 	render: function(caller) {
-		this.$el.html("<p>Tasks for user " + this.model.get("username") +
+		$("#userTasks").html("<p>Tasks for " + this.model.get("username") +
 		":</p>");
 		//Get all the tasks associated with a user
 		var userCreatedTasks = this.collection.where({creator: activeUser.get("username")});
@@ -111,7 +120,13 @@ var UserTasksView = Backbone.View.extend({
 		//If user has any tasks, append them. Otherwise, tell us we don't have any
 		if (userCreatedTasks.length !== 0) {
 			userCreatedTasks.forEach(this.appendNew, this);
-		} else this.$el.append("<p>You currently have no tasks.</p>");
+		}
+		if (userAssignedTasks.length !== 0) {
+			userCreatedTasks.forEach(this.appendNew, this);
+		}
+		if (userCreatedTasks.length === 0 && userAssignedTasks.length === 0) {
+			$("#userTasks").append("<p>You currently have no tasks.</p>");
+		}
 	},
 	/*belongsToUser: function(task) {
 		console.log(task.get("creator"), task.get("assignee"));
@@ -127,27 +142,24 @@ var UserTasksView = Backbone.View.extend({
 	//Eventually I need to make this display the proper TaskViews!
 
 	appendNew: function(newTask) {
-		this.$el.append("<p>Title: "+newTask.get("title")+"</p>" +
+		$("#userTasks").append("<p>Title: "+newTask.get("title")+"</p>" +
 	"<p>Creator:" + newTask.get("creator")+"</p>");
+		/*if(newTask.get("status") === "Unassigned") {
+			$("#userTasks").append("<p>Assignee: Unassigned</p>");
+		} else if(newTask.get("status") === "Assigned") {
+			$("#userTasks").append("<p>Assignee: "+newTask.get("assignee")+"</p>");
+		} // Don't need to worry about this right now */
 	},
 	reRender: function() {
 		this.$el.html('');
 		this.render('reRender');
 	},
 	initialize: function() {
-
-		this.listenTo(this.collection, "add")
-
-		//Whenever a new model is added to the collection, check if it
-		//was created by or assigned to the active user.
-	this.listenTo(this.collection, "add", this.belongsToUser);
-
-	this.listenTo(this.collection, "add", this.reRender);
-
 		//Whenever a new model is added to the collection, check if it
 		//was created by or assigned to the active user.
 		this.listenTo(this.collection, "add", this.reRender);
-
+		//Right now I can't get it to update the assignee, but eventually I need
+		// to get it to display actual TaskViews, so I'm not worrying about it now
 	}
 });
 
@@ -175,8 +187,8 @@ var UserView = Backbone.View.extend({
 		if(this.hasView == false) {
 			var userTasksView = new UserTasksView({model: activeUser, collection: app.tasks,
 			userTasksCollection: this.collection});
-			userTasksView.render('UserView.addView');
-			this.$el.append(userTasksView.$el);
+			userTasksView.render();
+			$("#userTasks").append(userTasksView.$el);
 			this.hasView = true;
 		}
 	},
@@ -184,12 +196,24 @@ var UserView = Backbone.View.extend({
 		"click #logOut": "logOut"
 	},
 	logOut: function() {
+
+		this.model = undefined;
+		this.$el.html('');
+		$('#createTasks').html('');
+		$('#unassignedTasks').html('');
+		$('#userTasks').html('');
+
 		//this.model = undefined;
 		//this.$el.html('');
 	//	userTasksView.html('');
+		this.hasView = false;
 		loginView = new LoginView({collection: app.users});
 		loginView.render();
 		$("#login").append(loginView.$el);
+		/*
+		$("#app").html('');
+		$("#welcome").html('');
+		console.log("Logged out..."); */
 		this.remove();
 	}
 
@@ -205,6 +229,7 @@ var LoginView = Backbone.View.extend({
 		"click #loginBtn": "authenticate",
 		"keypress input" : "loginOnEnter"
 	},
+
 	loginOnEnter: function (e){
 			if(e.keyCode == 13) {
 					this.authenticate();
@@ -229,6 +254,7 @@ var LoginView = Backbone.View.extend({
 			this.grantAccess(user);		//This will load the UserView.
 		} else this.$el.html("<p class='hideSoon'>Incorrect password.</p>");
 	},
+
 	grantAccess : function(user) {
 		//First set the active user to be the user that just logged in
 		activeUser = user;
@@ -236,7 +262,17 @@ var LoginView = Backbone.View.extend({
 		var userTasksCollection = new UserTasksCollection({user: activeUser});
 		var userView = new UserView({model: user, collection: userTasksCollection});
 		userView.render();
-		$("#app").append(userView.$el);
+		//this starts process - creates CreateTasksView with a TaskCollection (which has TaskModel in it)
+		createTaskView = new CreateTaskView({collection: app.tasks, model: activeUser});
+		//immediately runs the render function in CreateasksView (which just shows the 'Create New Task' button)
+		createTaskView.render();
+		$("#createTasks").append(createTaskView.$el);
+		console.log('Create tasks view should be up!');
+		var userTasksView = new UserTasksView({model: user, collection: app.tasks});
+		userTasksView.render();
+		$("#userTasks").append(userTasksView.$el);
+		console.log('UserTasksView should be up!');
+		$("#welcome").append(userView.$el);
 		this.remove();
 	}
 });
@@ -251,22 +287,16 @@ function GUI(users, tasks, el) {
 	this.el = el;
 
 
-//Start the user on the LoginView. Authenticate their info, then
-//send them on to the
-loginView = new LoginView({collection: app.users});
-loginView.render();
-$("#login").append(loginView.$el);
+	//Start the user on the LoginView. Authenticate their info, then
+	//send them on to the
+	loginView = new LoginView({collection: app.users});
+	loginView.render();
+	$("#login").append(loginView.$el);
 
-	//this starts process - creates CreateTasksView with a TaskCollection (which has TaskModel in it)
-	createTaskView = new CreateTaskView({collection: app.tasks, model: activeUser});
-	//immediately runs the render function in CreateasksView (which just shows the 'Create New Task' button)
-	createTaskView.render();
 
-	//appends render stuff into our app div
-	$(el).append(createTaskView.$el);
 	unassignedTasksView = new UnassignedTasksView({collection: app.tasks});
 	unassignedTasksView.render();
-	$(el).append(unassignedTasksView.$el);
+	$('#unassignedTasks').append(unassignedTasksView.$el);
 }
 return GUI;
 
