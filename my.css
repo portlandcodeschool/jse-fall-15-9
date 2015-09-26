@@ -1,0 +1,229 @@
+/*  */
+
+/* General */
+body {
+  background-color: #fafafa;
+  font-family: Helvetica;
+  font-size: 14px;
+  font-weight: 300;
+  letter-spacing: 0.75px;
+  margin: 1%;
+  margin: 10px;
+}
+
+#app {
+  width: 50%;
+
+}
+
+input {
+  display: block;
+  margin-bottom: 2%;
+  margin-top: 1%;
+  width: 175px;
+  border-radius: 3px;
+  border-top: #777 1px solid;
+  border-right: #777 1px solid;
+  border-bottom: #999 1px solid;
+  border-left: #999 1px solid;
+  padding: 5px;
+  font-size: 12px;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+/* Login View */
+
+#login {
+  width: auto;
+}
+
+ h2 {
+   font-family: Futura;
+   font-size: 18px;
+   font-weight: 300;
+   text-transform: uppercase;
+   font-weight: bold;
+   letter-spacing: 2px;
+ }
+
+#userInput {
+  font-family: Helvetica;
+  font-size: 12px;
+  font-weight: 300;
+  width: 125px;
+  letter-spacing: 0.5px;
+}
+
+#passInput {
+  width: 125px;
+}
+
+/* END login */
+
+
+
+#div {
+  width: 60%;
+  display: block;
+  margin-top: 25%;
+  padding-top: 10px;
+}
+
+#app {
+  width: 60%;
+  display: block;
+  margin-top: 3%;
+  padding-top: 10px;
+}
+
+#wrongPassword {
+  color: red;
+}
+
+#wrongUsername {
+  color: red;
+}
+#welcome {
+  float: top;
+  width: 90%;
+/*  height:inherit;
+  padding: 0px auto;
+  position: fixed;
+  top: 10px;
+  z-index: 2; */
+}
+
+
+
+/* User View (top of pagewelcome, log out)*/
+
+
+
+/* User Tasks View */
+#createTasks {
+
+}
+
+/* User View */
+/* User Tasks View */
+/* Unassigned Task View */
+/* Task View */
+
+#task-list {
+  padding-bottom: 5%;
+}
+
+
+/* task title, description, added by, status, input field, assign to user button */
+#unassignedTasks {
+
+}
+
+/* Tasks for (Username) */
+#userTasks {
+  padding: 1%;
+  margin-top: 10%;
+}
+
+
+
+}
+
+
+/* Create Task View */
+
+/* title text area*/
+#title {
+  font-family: Helvetica;
+  font-size: 13px;
+  width: 175px;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+
+}
+
+#description {
+  font-family: Helvetica;
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  width: 200px;
+  height: 100px;
+  padding: 5px;
+  border-radius: 3px;
+  border-top: #777 1px solid;
+  border-right: #777 1px solid;
+  border-bottom: #999 1px solid;
+  border-left: #999 1px solid;
+}
+
+
+/* END of Create Task View */
+
+/* Buttons ahoy! */
+
+/* Buttons */
+
+
+button {
+  padding: 5px 10px;
+  background-color: #ccc;
+  border: 2px solid #bbb;
+  color: #555;
+  font-family: Helvetica;
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 0.75px;
+  border-radius: 3px;
+}
+
+button:hover {
+  background-color: white;
+}
+
+
+#loginBtn {
+  margin-bottom: 2%;
+}
+
+
+#logOut {
+
+}
+
+
+#newTaskBtn {
+}
+
+
+#saveBtn {
+  margin-bottom: 7%;
+}
+
+#clearBtn {
+}
+
+#assignBtn {
+
+}
+/*
+
+*/
+
+/*
+
+#assigned {
+
+}
+
+#inProgress {
+
+}
+
+#completed {
+
+}
+
+*/

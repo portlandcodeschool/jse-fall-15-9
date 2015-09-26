@@ -4,13 +4,13 @@ var UserModel = Backbone.Model.extend({
 	}
 })
 
-var IssueModel = Backbone.Model.extend({
-	defaults: {
+var TaskModel = Backbone.Model.extend({
+	defaults : {
 		title:'',
 		description:'',
 		creator:'',
 		assignee:'',
-		status:'unassigned',
+		status:'Unassigned',
 	}
 	// Add methods if needed...
 })
@@ -19,6 +19,10 @@ var UserCollection = Backbone.Collection.extend({
 	model:UserModel
 })
 
-var IssueCollection = Backbone.Collection.extend({
-	model:IssueModel
+var TaskCollection = Backbone.Collection.extend({
+	model:TaskModel
+})
+
+var UserTasksCollection = Backbone.Collection.extend({
+	model: TaskModel
 })
