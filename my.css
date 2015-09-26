@@ -3,7 +3,6 @@
 /* General */
 body {
   background-color: #fafafa;
-  background-color: lightpink;
   font-family: Helvetica;
   font-size: 14px;
   font-weight: 300;
@@ -11,14 +10,8 @@ body {
   margin: 10px;
 }
 
-#div {
-  width: 60%;
-  display: block;
-}
-
 #app {
-  width: 60%;
-  background-color: lightblue;
+  width: 50%;
 }
 
 input {
@@ -63,43 +56,24 @@ input {
 #passInput {
   width: 125px;
 }
-/* END login */
 
+#wrongUsername {
+  color:red;
+}
 
-/* User View/ User Tasks (welcome, log out)*/
-
-#welcome {
-
+#wrongPassword {
+  color:red;
 }
 
 
+/* User View */
 /* User Tasks View */
-
-#createTasks {
-  margin-bottom: 7%;
-}
-
 /* Unassigned Task View */
 /* Task View */
 
 #task-list {
   padding-bottom: 5%;
-
 }
-
-
-
-#unassignedTasks {
-  margin-bottom: 7%;
-
-}
-
-#userTasks {
-  margin-bottom: 7%;
-
-}
-
-
 
 
 /* Create Task View */
@@ -110,11 +84,9 @@ input {
   width: 175px;
   font-weight: 300;
   letter-spacing: 0.5px;
-  margin-bottom: 2%;
-  margin-top: 1%;
+
 }
 
-  /* task description text area*/
 #description {
   font-family: Helvetica;
   font-size: 12px;
@@ -123,8 +95,6 @@ input {
   width: 200px;
   height: 100px;
   padding: 5px;
-  margin-bottom: 2%;
-  margin-top: 1%;
   border-radius: 3px;
   border-top: #777 1px solid;
   border-right: #777 1px solid;
@@ -132,7 +102,7 @@ input {
   border-left: #999 1px solid;
 }
 
-/* Buttons ahoy! */
+/* Buttons */
 
 button {
   padding: 5px 10px;
@@ -152,7 +122,7 @@ button:hover {
 
 
 #loginBtn {
-  margin-bottom: 7%;
+  margin-bottom: 2%;
 }
 
 
@@ -170,14 +140,9 @@ button:hover {
 
 
 #clearBtn {
-  margin-bottom: 7%;
 }
 
 
-
-/*
-space between task/assign to user and tasks for person 1
-*/
 
 
 /*
