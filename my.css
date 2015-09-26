@@ -3,22 +3,11 @@
 /* General */
 body {
   background-color: #fafafa;
-  background-color: lightpink;
   font-family: Helvetica;
   font-size: 14px;
   font-weight: 300;
   letter-spacing: 0.75px;
-  margin: 10px;
-}
-
-#div {
-  width: 60%;
-  display: block;
-}
-
-#app {
-  width: 60%;
-  background-color: lightblue;
+  margin: 1%;
 }
 
 input {
@@ -35,12 +24,13 @@ input {
   font-size: 12px;
 }
 
-
+::-webkit-scrollbar {
+    display: none;
+}
 /* Login View */
 
 #login {
   width: auto;
-  margin-bottom: 30px;
 }
 
  h2 {
@@ -66,17 +56,40 @@ input {
 /* END login */
 
 
-/* User View/ User Tasks (welcome, log out)*/
+
+#div {
+  width: 60%;
+  display: block;
+  margin-top: 25%;
+  padding-top: 10px;
+}
+
+#app {
+  width: 60%;
+  display: block;
+  margin-top: 3%;
+  padding-top: 10px;
+}
 
 #welcome {
-
+  float: top;
+  width: 90%;
+/*  height:inherit;
+  padding: 0px auto;
+  position: fixed;
+  top: 10px;
+  z-index: 2; */
 }
 
 
-/* User Tasks View */
 
+/* User View (top of pagewelcome, log out)*/
+
+
+
+/* User Tasks View */
 #createTasks {
-  margin-bottom: 7%;
+
 }
 
 /* Unassigned Task View */
@@ -88,15 +101,15 @@ input {
 }
 
 
-
+/* task title, description, added by, status, input field, assign to user button */
 #unassignedTasks {
-  margin-bottom: 7%;
 
 }
 
+/* Tasks for (Username) */
 #userTasks {
-  margin-bottom: 7%;
-
+  padding: 1%;
+  margin-top: 10%;
 }
 
 
@@ -104,6 +117,7 @@ input {
 
 /* Create Task View */
 
+/* title text area*/
 #title {
   font-family: Helvetica;
   font-size: 13px;
@@ -132,6 +146,8 @@ input {
   border-left: #999 1px solid;
 }
 
+/* END of Create Task View */
+
 /* Buttons ahoy! */
 
 button {
@@ -157,6 +173,7 @@ button:hover {
 
 
 #logOut {
+
 }
 
 
@@ -173,19 +190,23 @@ button:hover {
   margin-bottom: 7%;
 }
 
+#assignBtn {
+
+}
 
 
 /*
 space between task/assign to user and tasks for person 1
+
+user;s as tasks at the top?
+
 */
 
 
+
+
+
 /*
-Task Statuses...?
-
-#unassigned {
-
-}
 
 #assigned {
 
